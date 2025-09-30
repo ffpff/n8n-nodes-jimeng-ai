@@ -12,7 +12,7 @@ export class JimengAi implements INodeType {
   description: INodeTypeDescription = {
     displayName: "即梦 AI",
     name: "jimengAi",
-    icon: "file:jimeng-color.png",
+    icon: "file:jimeng-color.svg",
     group: ["transform"],
     version: 1,
     subtitle: '={{$parameter["operation"]}}',
@@ -72,7 +72,7 @@ export class JimengAi implements INodeType {
             operation: ["generateImage"],
           },
         },
-        description: "是否使用大模型对输入的 prompt 进行扩写，适合短提示词",
+        description: "Whether to use large model to expand the input prompt, suitable for short prompts",
       },
       {
         displayName: "随机种子",
@@ -119,24 +119,24 @@ export class JimengAi implements INodeType {
             value: "1328x1328",
           },
           {
-            name: "1664×936 (16:9 横版)",
-            value: "1664x936",
+            name: "1536×640 (超宽屏)",
+            value: "1536x640",
           },
           {
-            name: "936×1664 (9:16 竖版)",
-            value: "936x1664",
+            name: "1664×936 (16:9 横版)",
+            value: "1664x936",
           },
           {
             name: "2048×2048 (大正方形)",
             value: "2048x2048",
           },
           {
-            name: "1536×640 (超宽屏)",
-            value: "1536x640",
-          },
-          {
             name: "640×1536 (超高屏)",
             value: "640x1536",
+          },
+          {
+            name: "936×1664 (9:16 竖版)",
+            value: "936x1664",
           },
         ],
         default: "1328x1328",
@@ -192,7 +192,7 @@ export class JimengAi implements INodeType {
             operation: ["generateImage"],
           },
         },
-        description: "是否返回图片的临时访问链接（24小时有效）",
+        description: "Whether to return temporary access link for the image (valid for 24 hours)",
       },
       {
         displayName: "最大轮询时间（秒）",
@@ -243,93 +243,68 @@ export class JimengAi implements INodeType {
             name: "logoInfo",
             displayName: "水印信息",
             values: [
-              {
-                displayName: "添加水印",
-                name: "addLogo",
-                type: "boolean",
-                default: false,
-                description: "是否在生成的图片上添加水印",
-              },
-              {
-                displayName: "水印位置",
-                name: "position",
-                type: "options",
-                options: [
-                  {
-                    name: "左下",
-                    value: 0,
-                  },
-                  {
-                    name: "右下",
-                    value: 1,
-                  },
-                  {
-                    name: "左上",
-                    value: 2,
-                  },
-                  {
-                    name: "右上",
-                    value: 3,
-                  },
-                ],
-                default: 1,
-                displayOptions: {
-                  show: {
-                    addLogo: [true],
-                  },
-                },
-              },
-              {
-                displayName: "水印语言",
-                name: "language",
-                type: "options",
-                options: [
-                  {
-                    name: "中文",
-                    value: 0,
-                  },
-                  {
-                    name: "英文",
-                    value: 1,
-                  },
-                ],
-                default: 0,
-                displayOptions: {
-                  show: {
-                    addLogo: [true],
-                  },
-                },
-              },
-              {
-                displayName: "不透明度",
-                name: "opacity",
-                type: "number",
-                typeOptions: {
-                  minValue: 0,
-                  maxValue: 1,
-                  numberPrecision: 2,
-                },
-                default: 0.3,
-                displayOptions: {
-                  show: {
-                    addLogo: [true],
-                  },
-                },
-                description: "水印透明度，0 为完全透明，1 为完全不透明",
-              },
-              {
-                displayName: "自定义水印内容",
-                name: "logoTextContent",
-                type: "string",
-                default: "",
-                displayOptions: {
-                  show: {
-                    addLogo: [true],
-                  },
-                },
-                description: "自定义水印文本内容，为空则使用默认水印",
-              },
-            ],
+											{
+												displayName: '不透明度',
+												name: 'opacity',
+												type: 'number',
+												default: 0.3,
+												description: '水印透明度，0	为完全透明，1	为完全不透明',
+											},
+											{
+												displayName: '水印位置',
+												name: 'position',
+												type: 'options',
+												options: [
+													{
+														name: '左下',
+														value: 0
+													},
+													{
+														name: '右下',
+														value: 1
+													},
+													{
+														name: '左上',
+														value: 2
+													},
+													{
+														name: '右上',
+														value: 3
+													},
+												],
+												default: 1
+											},
+											{
+												displayName: '水印语言',
+												name: 'language',
+												type: 'options',
+												options: [
+													{
+														name: '中文',
+														value: 0
+													},
+													{
+														name: '英文',
+														value: 1
+													},
+													],
+												default: 0
+											},
+											{
+												displayName: '添加水印',
+												name: 'addLogo',
+												type: 'boolean',
+												default: false,
+												description: 'Whether to add watermark on the generated image',
+											},
+											{
+												displayName: '自定义水印内容',
+												name: 'logoTextContent',
+												type: 'string',
+												default: '',
+												description: '自定义水印文本内容，为空则使用默认水印',
+											},
+									],
           },
         ],
       },

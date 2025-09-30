@@ -4,6 +4,7 @@ module.exports = {
     ecmaVersion: 2019,
     sourceType: 'module'
   },
+  plugins: ['@typescript-eslint'],
   extends: [
     'plugin:n8n-nodes-base/nodes'
   ],
