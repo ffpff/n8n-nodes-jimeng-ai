@@ -234,6 +234,10 @@ export class JimengApiClient {
 			Version: '2022-08-31',
 		};
 
+		if (!params.prompt) {
+			throw new Error('prompt 不能为空');
+		}
+
 		const payload = JSON.stringify({
 			req_key: this.reqKey,
 			prompt: params.prompt,

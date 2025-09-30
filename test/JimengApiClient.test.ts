@@ -224,6 +224,7 @@ describe('JimengApiClient', () => {
 			expect(result).toEqual({
 				status: 'generating',
 				task_id: 'task-123',
+				status_code: 10000,
 				request_id: 'req-123',
 			});
 		});
@@ -233,15 +234,13 @@ describe('JimengApiClient', () => {
 				code: 10000,
 				data: {
 					status: 'done',
-					images: [
-						{
-							url: 'https://example.com/image1.jpg',
-							image: 'base64-data-1',
-						},
-						{
-							url: 'https://example.com/image2.jpg',
-							image: 'base64-data-2',
-						},
+					image_urls: [
+						'https://example.com/image1.jpg',
+						'https://example.com/image2.jpg'
+					],
+					binary_data_base64: [
+						'base64-data-1',
+						'base64-data-2'
 					],
 				},
 				request_id: 'req-123',
@@ -267,8 +266,16 @@ describe('JimengApiClient', () => {
 				code: 10000,
 				data: {
 					status: 'done',
-					reason: 'prompt contains sensitive content',
+					image_urls: [
+						'https://example.com/image1.jpg',
+						'https://example.com/image2.jpg'
+					],
+					binary_data_base64: [
+						'base64-data-1',
+						'base64-data-2'
+					]
 				},
+				message: "prompt contains sensitive content",
 				request_id: 'req-123',
 			};
 
@@ -279,7 +286,7 @@ describe('JimengApiClient', () => {
 			});
 
 			expect(result.status).toBe('done');
-			expect(result.reason).toBe('prompt contains sensitive content');
+			expect(result.status_message).toBe('prompt contains sensitive content');
 		});
 
 		it('应该正确传递 logo_info 参数', async () => {
@@ -343,7 +350,12 @@ describe('JimengApiClient', () => {
 				data: {
 					status: 'done',
 					status_code: 10000,
-					images: [{ url: 'https://example.com/img.jpg', image: 'base64-data' }],
+					image_urls: [
+						'https://example.com/img.jpg'
+					],
+					binary_data_base64: [
+						'base64-data-1'
+					]
 				},
 				request_id: 'req-123',
 			};
@@ -365,7 +377,13 @@ describe('JimengApiClient', () => {
 				{ code: 10000, data: { status: 'generating' }, request_id: 'req-2' },
 				{
 					code: 10000,
-					data: { status: 'done', status_code: 10000, images: [{ url: 'https://example.com/img.jpg', image: 'b64' }] },
+					data: { status: 'done', status_code: 10000,
+						image_urls: [
+							'https://example.com/img.jpg'
+						],
+						binary_data_base64: [
+							'base64-data-1'
+						] },
 					request_id: 'req-3',
 				},
 			];
@@ -435,13 +453,11 @@ describe('JimengApiClient', () => {
 
 		it('应该处理任务完成但生成失败的情况', async () => {
 			const mockResponse = {
-				code: 10000,
+				code: 50500,
 				data: {
-					status: 'done',
-					status_code: 50002,
-					status_message: '内容审核不通过',
-					reason: '内容包含敏感词',
+					status: 'done'
 				},
+				message: '内容审核不通过',
 				request_id: 'req-123',
 			};
 
@@ -451,7 +467,7 @@ describe('JimengApiClient', () => {
 				client.pollTaskResult({
 					task_id: 'task-123',
 				})
-			).rejects.toThrow('图片生成失败');
+			).rejects.toThrow('查询任务结果时发生错误: 查询任务结果失败 [50500]: 内容审核不通过 (Request ID: req-123)');
 		});
 
 		it('应该正确传递 logger 参数', async () => {
@@ -460,7 +476,12 @@ describe('JimengApiClient', () => {
 				data: {
 					status: 'done',
 					status_code: 10000,
-					images: [{ url: 'https://example.com/img.jpg', image: 'base64-data' }],
+						image_urls: [
+							'https://example.com/img.jpg'
+						],
+						binary_data_base64: [
+							'base64-data-1'
+						] 
 				},
 				request_id: 'req-123',
 			};
@@ -483,22 +504,6 @@ describe('JimengApiClient', () => {
 	});
 
 	describe('边界情况与错误处理', () => {
-		it('应该处理空 prompt', async () => {
-			const mockResponse = {
-				code: 10000,
-				data: { task_id: 'task-123' },
-				request_id: 'req-123',
-			};
-
-			mockHttpsRequest(mockResponse);
-
-			const result = await client.submitTask({
-				prompt: '',
-			});
-
-			expect(result.task_id).toBe('task-123');
-		});
-
 		it('应该处理极长的 prompt', async () => {
 			const mockResponse = {
 				code: 10000,
