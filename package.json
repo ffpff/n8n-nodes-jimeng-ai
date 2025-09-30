@@ -28,7 +28,7 @@
     "format": "prettier nodes credentials --write",
     "lint": "eslint '**/*.{js,ts}' --ignore-pattern 'node_modules/' --ignore-pattern 'dist/'",
     "lintfix": "eslint '**/*.{js,ts}' --ignore-pattern 'node_modules/' --ignore-pattern 'dist/' --fix",
-    "prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json",
+    "prepublishOnly": "npm run build && npm run lint",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
