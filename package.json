@@ -12,14 +12,14 @@
     "text-to-image"
   ],
   "license": "MIT",
-  "homepage": "",
+  "homepage": "https://github.com/ffpff/n8n-nodes-jimeng-ai.git#readme",
   "author": {
-    "name": "",
-    "email": ""
+    "name": "Romi Chen",
+    "email": "429650229@qq.com"
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/ffpff/n8n-nodes-jimeng-ai.git"
   },
   "main": "index.js",
   "scripts": {

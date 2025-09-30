@@ -317,6 +317,131 @@ npm run format
 
 MIT License
 
+## 发布到 npm
+
+### 前置准备
+
+1. **注册 npm 账号**: 访问 https://www.npmjs.com/signup
+2. **登录 npm**:
+   ```bash
+   npm login
+   ```
+
+### 发布前检查清单
+
+**必须全部通过**:
+
+```bash
+# 1. 所有测试通过
+npm test
+
+# 2. Lint 检查通过
+npm run lint
+
+# 3. 构建成功
+npm run build
+
+# 4. 检查 package.json 信息
+# - author: 必须填写
+# - repository: 必须填写
+# - homepage: 必须填写
+# - version: 遵循语义化版本 (0.1.0)
+
+# 5. 本地测试安装
+npm pack  # 生成 n8n-nodes-jimeng-ai-x.x.x.tgz
+# 在另一个目录测试: npm install /path/to/n8n-nodes-jimeng-ai-x.x.x.tgz
+```
+
+### 发布步骤
+
+```bash
+# 1. 确保工作目录干净
+git status
+
+# 2. 更新版本号 (可选)
+npm version patch  # 0.1.0 -> 0.1.1 (bug 修复)
+npm version minor  # 0.1.0 -> 0.2.0 (新功能)
+npm version major  # 0.1.0 -> 1.0.0 (破坏性更新)
+
+# 3. 发布到 npm (public 访问)
+npm publish --access public
+
+# 4. 推送到 GitHub
+git push origin main
+git push origin --tags
+```
+
+### 发布后验证
+
+1. **检查 npm**: 访问 https://www.npmjs.com/package/n8n-nodes-jimeng-ai
+2. **在 n8n 中安装**:
+   ```bash
+   # 在 n8n 项目中
+   npm install n8n-nodes-jimeng-ai
+   ```
+3. **测试节点功能**: 创建工作流验证所有功能正常
+
+### 提交到 n8n 社区列表
+
+发布成功后,提交到 n8n 官方社区节点列表:
+
+1. Fork https://github.com/n8n-io/n8n-docs
+2. 在 `docs/integrations/community-nodes/` 添加节点文档
+3. 提交 Pull Request
+
+### 版本管理规则
+
+遵循[语义化版本](https://semver.org/lang/zh-CN/):
+
+- **MAJOR (主版本)**: 不兼容的 API 修改 (1.0.0 → 2.0.0)
+- **MINOR (次版本)**: 向下兼容的功能新增 (1.0.0 → 1.1.0)
+- **PATCH (补丁版本)**: 向下兼容的 bug 修复 (1.0.0 → 1.0.1)
+
+### 常见发布错误
+
+**错误 1: 版本号已存在**
+```
+npm ERR! 403 You cannot publish over the previously published versions
+```
+解决: 更新版本号 `npm version patch`
+
+**错误 2: 认证失败**
+```
+npm ERR! code E401
+npm ERR! 401 Unauthorized
+```
+解决: 重新登录 `npm login`
+
+**错误 3: 包名已被占用**
+```
+npm ERR! 403 Package name too similar to existing packages
+```
+解决: 修改 `package.json` 中的 `name` 字段
+
+**错误 4: files 字段配置错误导致打包文件缺失**
+```
+# 查看将被打包的文件
+npm pack --dry-run
+```
+解决: 检查 `package.json` 中的 `files` 字段
+
+### 更新现有版本
+
+```bash
+# 1. 修改代码
+# 2. 运行测试
+npm test
+
+# 3. 更新版本号
+npm version patch
+
+# 4. 重新发布
+npm publish
+
+# 5. 推送更新
+git push origin main --tags
+```
+
 ## 贡献
 
 欢迎提交 Issue 和 Pull Request!
@@ -330,7 +455,7 @@ MIT License
 
 如果你觉得这个项目有用,请给个 ⭐️ Star!
 
-有问题或建议?请[提交 Issue](https://github.com/YOUR_USERNAME/n8n-jimeng-node/issues)。
+有问题或建议?请[提交 Issue](https://github.com/ffpff/n8n-nodes-jimeng-ai/issues)。
 
 ## 更新日志
 
