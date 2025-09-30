@@ -12,7 +12,7 @@ export class JimengAi implements INodeType {
   description: INodeTypeDescription = {
     displayName: "即梦 AI",
     name: "jimengAi",
-    icon: "file:jimeng-icon.svg",
+    icon: "file:jimeng-color.png",
     group: ["transform"],
     version: 1,
     subtitle: '={{$parameter["operation"]}}',
