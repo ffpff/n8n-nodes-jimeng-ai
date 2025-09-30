@@ -1,0 +1,67 @@
+{
+  "name": "n8n-nodes-jimeng-ai",
+  "version": "0.1.0",
+  "description": "n8n node for Jimeng AI text-to-image generation (即梦 AI 文生图 3.1)",
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n",
+    "jimeng",
+    "volcengine",
+    "ai",
+    "image-generation",
+    "text-to-image"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "author": {
+    "name": "",
+    "email": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "format": "prettier nodes credentials --write",
+    "lint": "eslint nodes credentials package.json",
+    "lintfix": "eslint nodes credentials package.json --fix",
+    "prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "files": [
+    "credentials",
+    "nodes",
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "credentials/JimengApi.credentials.js"
+    ],
+    "nodes": [
+      "nodes/JimengAi/JimengAi.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/jest": "^29.5.11",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.55.0",
+    "eslint-plugin-n8n-nodes-base": "^1.16.1",
+    "gulp": "^4.0.2",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "n8n-workflow": "^1.19.0",
+    "prettier": "^3.1.0",
+    "typescript": "^5.3.3"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  },
+  "dependencies": {}
+}

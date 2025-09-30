@@ -1,0 +1,14 @@
+node_modules/
+dist/
+*.js
+*.js.map
+*.d.ts
+*.d.ts.map
+!jest.config.js
+!gulpfile.js
+!.eslintrc.js
+.DS_Store
+coverage/
+*.log
+.env
+.vscode/
