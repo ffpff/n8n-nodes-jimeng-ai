@@ -256,7 +256,7 @@ Authorization: ...签名...
 
 ````json
 {
-  "code": 0,
+  "code": 10000,
   "message": "OK",
   "data": {
     "status": "done",

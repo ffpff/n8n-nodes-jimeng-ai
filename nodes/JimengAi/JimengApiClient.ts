@@ -73,24 +73,24 @@ export class JimengApiClient {
 			.map(key => `${this.urlEncode(key)}=${this.urlEncode(queryParams[key])}`)
 			.join('&');
 
-		const canonicalHeaders = Object.keys(headers)
-			.map(key => key.toLowerCase())
-			.sort()
-			.map(key => `${key}:${headers[key]}\n`)
-			.join('');
-
-		const signedHeaders = Object.keys(headers)
-			.map(key => key.toLowerCase())
-			.sort()
-			.join(';');
-
+		// 固定的签名头顺序 (与官方示例保持一致)
+		const signedHeaders = 'host;x-date;x-content-sha256;content-type';
 		const payloadHash = this.hashSHA256(payload);
+
+		// 按固定顺序构建 canonical headers (注意没有尾随 \n)
+		const canonicalHeaders = [
+			`host:${this.host}`,
+			`x-date:${headers['X-Date']}`,
+			`x-content-sha256:${payloadHash}`,
+			`content-type:${headers['Content-Type']}`,
+		].join('\n');
 
 		const canonicalRequest = [
 			method,
 			path,
 			sortedQueryParams,
 			canonicalHeaders,
+			'',  // 空行分隔 headers 和 signed headers
 			signedHeaders,
 			payloadHash,
 		].join('\n');
@@ -142,10 +142,7 @@ export class JimengApiClient {
 			// 构建 Authorization 头
 			const date = xDate.split('T')[0];
 			const credentialScope = `${date}/${this.region}/${this.service}/request`;
-			const signedHeaders = Object.keys(headers)
-				.map(key => key.toLowerCase())
-				.sort()
-				.join(';');
+			const signedHeaders = 'host;x-date;x-content-sha256;content-type';
 
 			headers['Authorization'] = [
 				`HMAC-SHA256 Credential=${this.accessKeyId}/${credentialScope}`,
@@ -317,6 +314,12 @@ export class JimengApiClient {
 		try {
 			const response = await this.sendRequest('POST', '/', queryParams, payload);
 
+			// 打印完整的 API 响应
+			console.log('[DEBUG] ===== getTaskResult API 响应 =====');
+			console.log('[DEBUG] 完整 response:', JSON.stringify(response, null, 2));
+			console.log('[DEBUG] payload 参数:', payload);
+			console.log('[DEBUG] =====================================');
+
 			if (response.code !== 10000) {
 				throw new Error(
 					`查询任务结果失败 [${response.code}]: ${response.message || '未知错误'}` +
@@ -329,6 +332,7 @@ export class JimengApiClient {
 			}
 
 			const data = response.data;
+			console.log('[DEBUG] 解析后的 data:', JSON.stringify(data, null, 2));
 			const result: any = {
 				status: data.status,
 				task_id: params.task_id,
@@ -336,26 +340,36 @@ export class JimengApiClient {
 			};
 
 			// 保存任务状态码和消息
-			if (data.status_code !== undefined) {
-				result.status_code = data.status_code;
+			if (response.code !== undefined) {
+				result.status_code = response.code;
 			}
-			if (data.status_message) {
-				result.status_message = data.status_message;
+			if (response.message) {
+				result.status_message = response.message;
 			}
 
 			if (data.status === 'done') {
-				if (data.images) {
-					result.image_urls = data.images.map((img: any) => img.url).filter(Boolean);
-					result.binary_data_base64 = data.images.map((img: any) => img.image).filter(Boolean);
+				console.log('[DEBUG] 任务状态为 done, 检查图片数据字段...');
+				console.log('[DEBUG] data.image_urls 存在?', !!data.image_urls);
+				console.log('[DEBUG] data.binary_data_base64 存在?', !!data.binary_data_base64);
+
+				if (data.image_urls) {
+					result.image_urls = data.image_urls;
+					console.log('[DEBUG] 已添加 image_urls, 数量:', data.image_urls.length);
 				}
-				if (data.reason) {
-					result.reason = data.reason;
+				if (data.binary_data_base64) {
+					result.binary_data_base64 = data.binary_data_base64;
+					console.log('[DEBUG] 已添加 binary_data_base64, 数量:', data.binary_data_base64.length);
 				}
 
 				// 检查生成结果 (只有当没有失败原因时才检查图片数据)
-				if (!data.reason && (!result.binary_data_base64 || result.binary_data_base64.length === 0)) {
+				if ((!result.binary_data_base64 || result.binary_data_base64.length === 0) && (!result.image_urls || result.image_urls.length === 0)) {
+					console.log('[DEBUG] ✗ 任务完成但未返回图片数据!');
+					console.log('[DEBUG] result.binary_data_base64:', result.binary_data_base64);
+					console.log('[DEBUG] result.image_urls:', result.image_urls);
 					throw new Error('任务完成但未返回图片数据');
 				}
+
+				console.log('[DEBUG] ✓ 图片数据验证通过');
 			}
 
 			return result;

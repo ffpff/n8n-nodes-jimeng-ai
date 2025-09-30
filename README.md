@@ -195,6 +195,86 @@ npm run build
 npm run dev
 ```
 
+### 集成到本地 n8n (Docker 环境)
+
+如果你的 n8n 运行在 Docker 中,按以下步骤集成自定义节点:
+
+#### 步骤 1: 修改 docker-compose.yaml
+
+在你的 n8n docker-compose 文件中添加节点挂载:
+
+```yaml
+services:
+  myn8n:
+    image: n8nio/n8n:latest
+    container_name: Myn8n
+    ports:
+      - "5678:5678"
+    volumes:
+      - /Users/romi/Documents/Projects/n8n/data:/home/node/.n8n
+      - /Users/romi/Documents/Projects/n8n/output:/home/node/output
+      # 添加自定义节点挂载
+      - /path/to/n8n-jimeng-node:/data/custom-nodes/n8n-nodes-jimeng
+    environment:
+      TZ: Asia/Shanghai
+      # 添加自定义扩展路径
+      N8N_CUSTOM_EXTENSIONS: /data/custom-nodes
+```
+
+**注意**: 将 `/path/to/n8n-jimeng-node` 替换为你本地节点项目的实际路径。
+
+#### 步骤 2: 构建并启动
+
+```bash
+# 1. 构建节点
+npm run build
+
+# 2. 停止并重新启动容器
+docker-compose -f your-docker-compose.yaml down
+docker-compose -f your-docker-compose.yaml up -d
+
+# 3. 查看日志确认加载成功
+docker-compose -f your-docker-compose.yaml logs -f
+```
+
+#### 步骤 3: 验证安装
+
+1. 打开 n8n Web 界面 (http://localhost:5678)
+2. 创建新的工作流
+3. 在节点搜索框输入 "Jimeng" 或 "即梦"
+4. 应该能看到 **Jimeng AI** 节点
+
+#### 开发时的热更新流程
+
+每次修改代码后:
+
+```bash
+# 1. 重新构建
+npm run build
+
+# 2. 重启容器
+docker-compose -f your-docker-compose.yaml restart
+
+# 3. 刷新 n8n Web 界面
+```
+
+#### 常见问题
+
+**Q: 修改代码后节点没有更新?**
+- 确保执行了 `npm run build`
+- 重启 Docker 容器
+- 清除浏览器缓存并刷新页面
+
+**Q: 找不到节点?**
+- 检查 `dist/` 目录是否生成
+- 查看容器日志: `docker-compose logs -f`
+- 确认 `N8N_CUSTOM_EXTENSIONS` 环境变量已设置
+
+**Q: 节点加载错误?**
+- 进入容器检查: `docker exec -it Myn8n ls -la /data/custom-nodes/n8n-nodes-jimeng`
+- 确保 `package.json` 中的 `n8n.nodes` 配置正确
+- 检查节点代码是否有编译错误
+
 ### 运行测试
 
 ```bash

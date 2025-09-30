@@ -1,0 +1,15 @@
+services:
+  myn8n:
+    image: n8nio/n8n:latest
+    container_name: Myn8n
+    ports:
+      - "5678:5678"
+    volumes:
+      - /Users/romi/Documents/Projects/n8n/data:/home/node/.n8n
+      - /Users/romi/Documents/Projects/n8n/output:/home/node/output
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /Users/romi/Documents/Project/AICoding/n8n-jimeng-node:/data/custom-nodes/n8n-nodes-jimeng
+    environment:
+      TZ: Asia/Shanghai
+      N8N_CUSTOM_EXTENSIONS: /data/custom-nodes
